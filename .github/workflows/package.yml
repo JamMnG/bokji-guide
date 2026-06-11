@@ -1,0 +1,30 @@
+name: Package
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create package
+        run: |
+          zip -r bokji-guide-package.zip . \
+            -x ".git/*" \
+            -x ".github/*" \
+            -x "*.log" \
+            -x ".env" \
+            -x "node_modules/*"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bokji-guide-package
+          path: bokji-guide-package.zip

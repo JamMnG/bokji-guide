@@ -1,0 +1,41 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1280" height="720" rx="32" fill="#F4F8FF"/>
+  <rect x="48" y="40" width="1184" height="640" rx="28" fill="white" stroke="#DDE7FF"/>
+  <rect x="72" y="64" width="1136" height="72" rx="20" fill="#FFFFFF"/>
+  <rect x="88" y="86" width="46" height="46" rx="16" fill="#2C63F5"/>
+  <text x="150" y="109" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="28" font-weight="700" fill="#12233A">복지길잡이</text>
+  <text x="150" y="129" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="13" fill="#68798F">중앙부처 복지서비스 안내</text>
+  <rect x="742" y="82" width="96" height="28" rx="14" fill="#EEF4FF"/>
+  <rect x="846" y="82" width="96" height="28" rx="14" fill="#EEF4FF"/>
+  <rect x="950" y="82" width="96" height="28" rx="14" fill="#EEF4FF"/>
+  <rect x="1054" y="82" width="96" height="28" rx="14" fill="#EEF4FF"/>
+
+  <rect x="72" y="160" width="1136" height="226" rx="28" fill="url(#g1)"/>
+  <text x="104" y="226" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="42" font-weight="700" fill="#FFFFFF">복지 정보를 한 곳에서, 빠르게 찾으세요.</text>
+  <text x="104" y="274" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="18" fill="#EEF4FF">검색, 생애주기, 부처 필터와 찜 기능을 복지로 스타일로 정리한 화면입니다.</text>
+  <rect x="104" y="306" width="540" height="52" rx="26" fill="white" opacity="0.96"/>
+  <rect x="656" y="306" width="180" height="52" rx="26" fill="white" opacity="0.96"/>
+  <rect x="848" y="306" width="124" height="52" rx="26" fill="#173FA6"/>
+  <text x="880" y="339" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="18" font-weight="700" fill="#FFFFFF">검색</text>
+
+  <rect x="72" y="412" width="1136" height="160" rx="24" fill="#FFFFFF" stroke="#DDE7FF"/>
+  <rect x="96" y="436" width="148" height="112" rx="22" fill="#EEF4FF"/>
+  <rect x="260" y="436" width="148" height="112" rx="22" fill="#EEF4FF"/>
+  <rect x="424" y="436" width="148" height="112" rx="22" fill="#EEF4FF"/>
+  <rect x="588" y="436" width="148" height="112" rx="22" fill="#EEF4FF"/>
+  <rect x="752" y="436" width="148" height="112" rx="22" fill="#EEF4FF"/>
+  <rect x="916" y="436" width="148" height="112" rx="22" fill="#EEF4FF"/>
+  <text x="126" y="501" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="16" font-weight="700" fill="#173FA6">복지서비스</text>
+  <text x="295" y="501" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="16" font-weight="700" fill="#173FA6">서비스신청</text>
+  <text x="463" y="501" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="16" font-weight="700" fill="#173FA6">복지도움</text>
+  <text x="630" y="501" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="16" font-weight="700" fill="#173FA6">복지소식</text>
+  <text x="794" y="501" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="16" font-weight="700" fill="#173FA6">찜한 복지</text>
+  <text x="958" y="501" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="16" font-weight="700" fill="#173FA6">초기화</text>
+
+  <defs>
+    <linearGradient id="g1" x1="72" y1="160" x2="1208" y2="386" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2C63F5"/>
+      <stop offset="1" stop-color="#7C61FF"/>
+    </linearGradient>
+  </defs>
+</svg>

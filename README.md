@@ -2,6 +2,16 @@
 
 `복지길잡이`는 중앙부처 복지서비스를 검색하고 비교할 수 있는 단일 페이지 웹 애플리케이션입니다.
 
+## 배지
+
+![Node](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)
+![UI](https://img.shields.io/badge/UI-복지로%20스타일-2c63f5)
+![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-CI%20enabled-2088ff?logo=githubactions&logoColor=white)
+
+## 미리보기
+
+![복지길잡이 미리보기](assets/preview.svg)
+
 ## 프로젝트 이름
 
 - 저장소 이름: `bokji-guide`
@@ -15,6 +25,12 @@
 - 상세 정보 모달
 - 찜한 복지 저장 및 `localStorage` 유지
 - 복지로 스타일의 상단 영역, 공지, 바로가기 UI
+
+## GitHub Actions
+
+- `CI` 워크플로우가 문법 검사와 기본 검증을 수행합니다.
+- `Package` 워크플로우가 배포용 압축 파일을 생성해 아티팩트로 올립니다.
+- 실제 데이터 연동은 로컬 프록시 서버를 통해 동작합니다.
 
 ## 실행 방법
 
@@ -32,6 +48,8 @@ node server.js
 - `index.html` : 화면 UI와 클라이언트 로직
 - `server.js` : `data.go.kr` API를 호출하는 로컬 프록시 서버
 - `.env.example` : 환경변수 예시
+- `assets/preview.svg` : README 미리보기 이미지
+- `.github/workflows/ci.yml` : GitHub Actions 검증 워크플로우
 
 ## 참고
 

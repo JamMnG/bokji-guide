@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check server syntax
+        run: node --check server.js
+
+      - name: Check frontend syntax
+        run: node -e "const fs=require('fs'); const html=fs.readFileSync('index.html','utf8'); const match=html.match(/<script>([\s\S]*)<\/script>/); if(!match) throw new Error('script block not found'); require('node:fs').writeFileSync(process.env.RUNNER_TEMP + '/welfare-guide-check.js', match[1]);"
+
+      - name: Validate extracted frontend script
+        run: node --check "$RUNNER_TEMP/welfare-guide-check.js"
