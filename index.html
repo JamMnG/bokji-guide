@@ -1,0 +1,1987 @@
+﻿
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#e9f2fb" />
+  <title>복지길잡이</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #eef5fb;
+      --bg-soft: #f7fbff;
+      --surface: rgba(255, 255, 255, 0.82);
+      --surface-strong: rgba(255, 255, 255, 0.96);
+      --line: rgba(36, 73, 109, 0.12);
+      --text: #16324f;
+      --muted: #5e748a;
+      --primary: #276ef1;
+      --primary-deep: #1749b8;
+      --primary-soft: #dbe9ff;
+      --success: #0f9d7a;
+      --shadow: 0 18px 60px rgba(22, 50, 79, 0.12);
+      --shadow-soft: 0 10px 24px rgba(22, 50, 79, 0.08);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --max: 1240px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Pretendard Variable", "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 20%, rgba(39, 110, 241, 0.14), transparent 26%),
+        radial-gradient(circle at 85% 10%, rgba(15, 157, 122, 0.11), transparent 22%),
+        radial-gradient(circle at 80% 85%, rgba(39, 110, 241, 0.11), transparent 26%),
+        linear-gradient(180deg, #f7fbff 0%, #edf5fd 48%, #e9f1f9 100%);
+    }
+
+    button, input, select { font: inherit; }
+    button {
+      border: 0;
+      background: none;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .page { position: relative; overflow: hidden; min-height: 100vh; }
+    .page::before,
+    .page::after {
+      content: "";
+      position: fixed;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      filter: blur(14px);
+      opacity: 0.55;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .page::before {
+      top: -120px;
+      left: -120px;
+      background: radial-gradient(circle, rgba(39, 110, 241, 0.22), transparent 65%);
+    }
+    .page::after {
+      right: -120px;
+      bottom: -150px;
+      background: radial-gradient(circle, rgba(15, 157, 122, 0.16), transparent 65%);
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 48px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+      gap: 20px;
+      align-items: stretch;
+      margin-bottom: 20px;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .hero-panel,
+    .summary-panel,
+    .filter-panel,
+    .results-panel,
+    .search-panel,
+    .stat-card {
+      background: var(--surface);
+      backdrop-filter: blur(18px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-panel {
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-panel::after {
+      content: "";
+      position: absolute;
+      inset: auto -70px -90px auto;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(39, 110, 241, 0.18), transparent 68%);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--primary-deep);
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      box-shadow: var(--shadow-soft);
+    }
+    .eyebrow-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, var(--primary) 0%, #5f98ff 100%);
+      box-shadow: 0 0 0 5px rgba(39, 110, 241, 0.12);
+    }
+
+    .hero h1 {
+      margin: 18px 0 14px;
+      font-size: clamp(2.2rem, 4vw, 4.4rem);
+      line-height: 1.03;
+      letter-spacing: -0.05em;
+    }
+    .hero p {
+      margin: 0;
+      max-width: 60ch;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+
+    .hero-stats {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .stat-card {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 150px;
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: 0 18px 42px rgba(22, 50, 79, 0.12); }
+    .stat-label { font-size: 0.92rem; color: var(--muted); font-weight: 600; }
+    .stat-value { margin-top: 6px; font-size: 2rem; font-weight: 800; letter-spacing: -0.05em; }
+    .stat-note { margin-top: 14px; color: var(--muted); font-size: 0.94rem; line-height: 1.5; }
+
+    .search-panel { padding: 18px; margin-bottom: 16px; }
+    .search-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(240px, 0.6fr) auto;
+      gap: 12px;
+      align-items: center;
+    }
+    .field { position: relative; }
+    .field input,
+    .field select {
+      width: 100%;
+      border-radius: 18px;
+      border: 1px solid rgba(36, 73, 109, 0.14);
+      background: rgba(255, 255, 255, 0.95);
+      padding: 16px 18px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
+    }
+    .field input::placeholder { color: #8aa0b6; }
+    .field input:focus,
+    .field select:focus {
+      border-color: rgba(39, 110, 241, 0.42);
+      box-shadow: 0 0 0 5px rgba(39, 110, 241, 0.12);
+    }
+    .search-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 56px;
+      padding: 0 20px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-deep) 100%);
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      box-shadow: 0 16px 28px rgba(39, 110, 241, 0.24);
+      transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+    }
+    .search-action:hover {
+      transform: translateY(-2px);
+      filter: saturate(1.05);
+      box-shadow: 0 20px 32px rgba(39, 110, 241, 0.28);
+    }
+    .search-action:active { transform: translateY(0); }
+
+    .toolbar {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .toolbar-top,
+    .toolbar-bottom {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+      font-size: 1.06rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+    .section-title::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, var(--primary) 0%, #5b9bff 100%);
+      box-shadow: 0 0 0 5px rgba(39, 110, 241, 0.08);
+    }
+    .subtle { margin: 0; color: var(--muted); font-size: 0.94rem; }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(36, 73, 109, 0.12);
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      transition: transform 160ms ease, background 160ms ease, color 160ms ease, border-color 160ms ease;
+    }
+    .chip:hover {
+      transform: translateY(-1px);
+      border-color: rgba(39, 110, 241, 0.3);
+      color: var(--text);
+    }
+    .chip.is-active {
+      background: linear-gradient(135deg, rgba(39, 110, 241, 0.13), rgba(39, 110, 241, 0.08));
+      border-color: rgba(39, 110, 241, 0.32);
+      color: var(--primary-deep);
+      box-shadow: 0 12px 26px rgba(39, 110, 241, 0.1);
+    }
+    .filter-panel { padding: 18px; margin-bottom: 16px; }
+    .filter-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .filter-scroll::-webkit-scrollbar { display: none; }
+    .filter-chip { white-space: nowrap; }
+    .toggle-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .ghost {
+      padding: 11px 15px;
+      border-radius: 14px;
+      border: 1px solid rgba(36, 73, 109, 0.12);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--text);
+      font-weight: 700;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+    .ghost:hover { transform: translateY(-1px); border-color: rgba(39, 110, 241, 0.28); }
+    .ghost.is-active {
+      background: rgba(39, 110, 241, 0.12);
+      border-color: rgba(39, 110, 241, 0.38);
+      color: var(--primary-deep);
+    }
+    .results-panel {
+      padding: 18px;
+      min-height: 380px;
+    }
+    .results-header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .results-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(36, 73, 109, 0.1);
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .badge strong { color: var(--text); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100%;
+      padding: 20px;
+      background: var(--surface-strong);
+      border: 1px solid rgba(36, 73, 109, 0.11);
+      border-radius: 24px;
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+      animation: cardIn 0.48s ease both;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, rgba(39, 110, 241, 0.9), rgba(15, 157, 122, 0.86));
+      opacity: 0.92;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(39, 110, 241, 0.26);
+      box-shadow: 0 22px 46px rgba(22, 50, 79, 0.14);
+    }
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-top: 8px;
+    }
+    .card-title {
+      margin: 0;
+      font-size: 1.2rem;
+      line-height: 1.35;
+      letter-spacing: -0.04em;
+      font-weight: 800;
+    }
+    .card-ministry {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary-deep);
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+    .card-summary {
+      margin: 14px 0 16px;
+      color: var(--muted);
+      line-height: 1.68;
+      font-size: 0.98rem;
+      min-height: 4.8em;
+    }
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .tag {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(247, 250, 255, 0.95);
+      border: 1px solid rgba(36, 73, 109, 0.08);
+      color: #5c7288;
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .card-link {
+      color: var(--primary-deep);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+    .bookmark-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: rgba(39, 110, 241, 0.08);
+      color: var(--primary-deep);
+      transition: transform 160ms ease, background 160ms ease, color 160ms ease;
+      flex: 0 0 auto;
+    }
+    .bookmark-btn:hover {
+      transform: translateY(-1px) scale(1.03);
+      background: rgba(39, 110, 241, 0.14);
+    }
+    .bookmark-btn.is-saved {
+      background: rgba(230, 73, 128, 0.12);
+      color: #d6225f;
+    }
+    .bookmark-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+    .state {
+      display: grid;
+      place-items: center;
+      min-height: 310px;
+      padding: 28px 16px;
+      text-align: center;
+    }
+    .state-card {
+      max-width: 520px;
+      padding: 30px;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(36, 73, 109, 0.1);
+      box-shadow: var(--shadow-soft);
+    }
+    .state-title {
+      margin: 0 0 10px;
+      font-size: 1.28rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+    .state-text {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .spinner-wrap {
+      display: grid;
+      gap: 16px;
+      place-items: center;
+      min-height: 280px;
+    }
+    .spinner {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 4px solid rgba(39, 110, 241, 0.16);
+      border-top-color: var(--primary);
+      animation: spin 0.92s linear infinite;
+    }
+    .spinner-label { color: var(--muted); font-weight: 700; }
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(10, 24, 39, 0.42);
+      backdrop-filter: blur(10px);
+      z-index: 50;
+    }
+    .modal-backdrop.is-open { display: grid; }
+    .modal {
+      width: min(860px, 100%);
+      max-height: min(88vh, 900px);
+      overflow: auto;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.98);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 24px 80px rgba(4, 18, 35, 0.25);
+      animation: modalIn 0.22s ease both;
+    }
+    .modal-header {
+      position: sticky;
+      top: 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 24px 24px 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.94) 100%);
+      border-bottom: 1px solid rgba(36, 73, 109, 0.08);
+      z-index: 1;
+    }
+    .modal-title-wrap h2 {
+      margin: 0 0 8px;
+      font-size: clamp(1.6rem, 2.6vw, 2.2rem);
+      line-height: 1.18;
+      letter-spacing: -0.05em;
+    }
+    .modal-title-wrap p { margin: 0; color: var(--muted); }
+    .modal-close {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: rgba(39, 110, 241, 0.1);
+      color: var(--primary-deep);
+      font-size: 1.2rem;
+      font-weight: 900;
+      transition: transform 160ms ease, background 160ms ease;
+    }
+    .modal-close:hover { transform: scale(1.05); background: rgba(39, 110, 241, 0.16); }
+    .modal-body {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      padding: 24px;
+    }
+    .modal-block {
+      padding: 20px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      border: 1px solid rgba(36, 73, 109, 0.09);
+    }
+    .modal-block h3 {
+      margin: 0 0 12px;
+      font-size: 1rem;
+      color: var(--primary-deep);
+      letter-spacing: -0.03em;
+    }
+    .modal-block p {
+      margin: 0;
+      color: var(--text);
+      line-height: 1.8;
+      white-space: pre-line;
+    }
+    .modal-block.full { grid-column: 1 / -1; }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translate(-50%, 120%);
+      opacity: 0;
+      visibility: hidden;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      border-radius: 999px;
+      background: rgba(22, 50, 79, 0.92);
+      color: #fff;
+      box-shadow: 0 18px 36px rgba(5, 16, 28, 0.22);
+      transition: transform 220ms ease, opacity 220ms ease, visibility 220ms ease;
+      z-index: 60;
+    }
+    .toast.is-show { transform: translate(-50%, 0); opacity: 1; visibility: visible; }
+    .toast strong { color: #9fd2ff; }
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .status-line {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(15, 157, 122, 0.08);
+      color: #0a7f63;
+      font-weight: 700;
+    }
+    .status-line.error {
+      background: rgba(214, 34, 95, 0.08);
+      color: #c51f57;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(14px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(14px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @media (max-width: 1100px) {
+      .hero,
+      .search-grid,
+      .grid,
+      .modal-body { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .hero-stats { grid-column: 1 / -1; }
+      .search-action { grid-column: 1 / -1; }
+    }
+    @media (max-width: 820px) {
+      .hero,
+      .search-grid,
+      .grid,
+      .modal-body { grid-template-columns: 1fr; }
+      .hero-panel,
+      .search-panel,
+      .filter-panel,
+      .results-panel { border-radius: 24px; }
+      .hero { gap: 14px; }
+      .hero-panel { padding: 22px; }
+      .hero-stats { grid-template-columns: 1fr 1fr; }
+      .toolbar-top,
+      .toolbar-bottom { align-items: flex-start; }
+      .toggle-row { justify-content: flex-start; }
+      .modal-header { padding: 20px 20px 16px; }
+      .modal-body { padding: 20px; }
+    }
+    @media (max-width: 560px) {
+      .container {
+        width: min(var(--max), calc(100% - 20px));
+        padding-top: 18px;
+      }
+      .hero h1 { font-size: 2.1rem; }
+      .hero p,
+      .subtle,
+      .card-summary,
+      .state-text { font-size: 0.95rem; }
+      .hero-stats { grid-template-columns: 1fr; }
+      .stat-card { min-height: 132px; }
+      .chip,
+      .ghost { padding-inline: 14px; }
+      .modal { border-radius: 24px; }
+    }
+
+    :root {
+      --bokji-blue: #2c63f5;
+      --bokji-deep: #173fa6;
+      --bokji-sky: #eef4ff;
+      --bokji-line: #dfe7ff;
+      --bokji-ink: #12233a;
+      --bokji-muted: #68798f;
+      --bokji-surface: rgba(255, 255, 255, 0.98);
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 10% 12%, rgba(44, 99, 245, 0.10), transparent 26%),
+        radial-gradient(circle at 90% 8%, rgba(44, 99, 245, 0.08), transparent 18%),
+        linear-gradient(180deg, #f4f8ff 0%, #ffffff 42%, #f6f8fc 100%);
+    }
+
+    .page {
+      min-height: 100vh;
+    }
+
+    .site {
+      min-height: 100vh;
+      color: var(--bokji-ink);
+    }
+
+    .site-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(23, 63, 166, 0.08);
+    }
+
+    .site-topbar-inner {
+      width: min(1280px, calc(100% - 32px));
+      margin: 0 auto;
+      min-height: 84px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--bokji-blue), #5f82ff);
+      color: #fff;
+      font-weight: 900;
+      letter-spacing: -0.08em;
+      box-shadow: 0 12px 24px rgba(44, 99, 245, 0.22);
+      flex: 0 0 auto;
+    }
+
+    .brand-copy {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .brand-copy strong {
+      font-size: 1.35rem;
+      letter-spacing: -0.06em;
+      line-height: 1;
+    }
+
+    .brand-copy span {
+      font-size: 0.88rem;
+      color: var(--bokji-muted);
+    }
+
+    .site-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .site-nav button,
+    .site-nav a {
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: var(--bokji-ink);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+    }
+
+    .site-nav button:hover,
+    .site-nav a:hover {
+      background: var(--bokji-sky);
+      color: var(--bokji-deep);
+      transform: translateY(-1px);
+    }
+
+    .site-auth {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(44, 99, 245, 0.22);
+      color: var(--bokji-deep);
+      background: #fff;
+      font-weight: 800;
+      box-shadow: 0 10px 18px rgba(44, 99, 245, 0.08);
+    }
+
+    .site-main {
+      width: min(1280px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 42px;
+    }
+
+    .hero-panel {
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at 14% 18%, rgba(255, 255, 255, 0.28), transparent 22%),
+        linear-gradient(135deg, #2c63f5 0%, #5876ff 52%, #7c61ff 100%);
+      color: #fff;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(44, 99, 245, 0.24);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-panel::after {
+      content: '';
+      position: absolute;
+      right: -60px;
+      bottom: -80px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 68%);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+      gap: 20px;
+      align-items: center;
+    }
+
+    .hero-title {
+      margin: 0;
+      font-size: clamp(2.4rem, 4vw, 4.6rem);
+      line-height: 1.04;
+      letter-spacing: -0.06em;
+    }
+
+    .hero-text {
+      margin: 14px 0 0;
+      max-width: 58ch;
+      font-size: 1.02rem;
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .search-board {
+      margin-top: 22px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 30px;
+      box-shadow: 0 18px 44px rgba(17, 38, 79, 0.14);
+      padding: 18px;
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(220px, 0.56fr) auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .search-input,
+    .search-select {
+      width: 100%;
+      height: 58px;
+      border-radius: 999px;
+      border: 1px solid var(--bokji-line);
+      background: #fff;
+      padding: 0 22px;
+      color: var(--bokji-ink);
+      outline: none;
+      transition: box-shadow 160ms ease, border-color 160ms ease, transform 160ms ease;
+    }
+
+    .search-input::placeholder {
+      color: #8a97a7;
+    }
+
+    .search-input:focus,
+    .search-select:focus {
+      border-color: rgba(44, 99, 245, 0.35);
+      box-shadow: 0 0 0 6px rgba(44, 99, 245, 0.10);
+    }
+
+    .search-button {
+      height: 58px;
+      padding: 0 22px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--bokji-blue), var(--bokji-deep));
+      color: #fff;
+      font-weight: 800;
+      box-shadow: 0 14px 30px rgba(44, 99, 245, 0.26);
+    }
+
+    .search-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .notice-strip {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 16px;
+      border-radius: 22px;
+      background: rgba(44, 99, 245, 0.08);
+      color: var(--bokji-deep);
+    }
+
+    .notice-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 76px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--bokji-blue);
+      font-size: 0.9rem;
+      font-weight: 800;
+      box-shadow: 0 8px 18px rgba(44, 99, 245, 0.10);
+    }
+
+    .notice-track {
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .notice-message {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 700;
+      color: var(--bokji-ink);
+    }
+
+    .notice-message.is-active {
+      display: flex;
+    }
+
+    .notice-controls {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .notice-control {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #fff;
+      border: 1px solid rgba(44, 99, 245, 0.18);
+      color: var(--bokji-deep);
+      font-weight: 900;
+    }
+
+    .quick-menu {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .quick-card {
+      min-height: 120px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(44, 99, 245, 0.12);
+      box-shadow: 0 12px 28px rgba(17, 38, 79, 0.08);
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 10px;
+      padding: 18px 14px;
+      transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+    }
+
+    .quick-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(44, 99, 245, 0.24);
+      box-shadow: 0 18px 34px rgba(17, 38, 79, 0.12);
+    }
+
+    .quick-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(44, 99, 245, 0.12), rgba(124, 97, 255, 0.12));
+      color: var(--bokji-blue);
+      font-size: 1.2rem;
+      font-weight: 900;
+    }
+
+    .quick-title {
+      font-size: 0.96rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: var(--bokji-ink);
+    }
+
+    .panel {
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.98);
+      border: 1px solid rgba(44, 99, 245, 0.10);
+      border-radius: 28px;
+      box-shadow: 0 14px 34px rgba(17, 38, 79, 0.08);
+      padding: 22px;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+    }
+
+    .panel-subtitle {
+      margin: 6px 0 0;
+      color: var(--bokji-muted);
+      font-size: 0.94rem;
+    }
+
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .filter-row .chip {
+      border-radius: 999px;
+      padding: 11px 16px;
+      background: #fff;
+      border: 1px solid rgba(44, 99, 245, 0.12);
+      box-shadow: none;
+    }
+
+    .filter-row .chip.is-active {
+      background: var(--bokji-sky);
+      color: var(--bokji-deep);
+      border-color: rgba(44, 99, 245, 0.28);
+    }
+
+    .service-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .service-toolbar .ghost {
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid rgba(44, 99, 245, 0.12);
+    }
+
+    .service-toolbar .ghost.is-active {
+      background: var(--bokji-sky);
+      border-color: rgba(44, 99, 245, 0.28);
+    }
+
+    .section-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(44, 99, 245, 0.08);
+      color: var(--bokji-deep);
+      font-size: 0.88rem;
+      font-weight: 800;
+    }
+
+    .result-shell {
+      margin-top: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .result-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .result-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .result-card {
+      background: #fff;
+      border: 1px solid rgba(44, 99, 245, 0.10);
+      border-radius: 26px;
+      box-shadow: 0 12px 28px rgba(17, 38, 79, 0.08);
+    }
+
+    .site-footer {
+      margin-top: 24px;
+      padding: 24px 0 36px;
+      color: var(--bokji-muted);
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 1100px) {
+      .hero-grid,
+      .search-row,
+      .result-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .quick-menu {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 820px) {
+      .site-topbar-inner,
+      .panel-head,
+      .service-toolbar,
+      .result-head {
+        align-items: flex-start;
+      }
+
+      .site-topbar-inner {
+        flex-wrap: wrap;
+        padding: 14px 0;
+      }
+
+      .site-nav {
+        justify-content: flex-start;
+      }
+
+      .hero-grid,
+      .search-row,
+      .result-grid,
+      .notice-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .notice-strip {
+        justify-items: flex-start;
+      }
+
+      .quick-menu {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .hero-panel,
+      .panel {
+        border-radius: 24px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .site-main {
+        width: min(1280px, calc(100% - 18px));
+        padding-top: 16px;
+      }
+
+      .brand-copy strong {
+        font-size: 1.18rem;
+      }
+
+      .hero-title {
+        font-size: 2.1rem;
+      }
+
+      .search-button,
+      .search-input,
+      .search-select {
+        height: 52px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="site">
+      <header class="site-topbar">
+        <div class="site-topbar-inner">
+          <a class="brand" href="#top" aria-label="복지길잡이 홈으로 이동">
+            <span class="brand-mark">복</span>
+            <span class="brand-copy">
+              <strong>복지길잡이</strong>
+              <span>중앙부처 복지서비스 안내</span>
+            </span>
+          </a>
+          <nav class="site-nav" aria-label="주요 메뉴">
+            <button type="button" data-nav="services">복지서비스</button>
+            <button type="button" data-nav="applications">서비스신청</button>
+            <button type="button" data-nav="guide">복지도움</button>
+            <button type="button" data-nav="news">복지소식</button>
+          </nav>
+          <button class="site-auth" type="button">로그인</button>
+        </div>
+      </header>
+
+      <main class="site-main">
+        <section class="hero-panel" id="top" aria-labelledby="page-title">
+          <div class="hero-grid">
+            <div>
+              <h1 class="hero-title" id="page-title">복지 정보를 한 곳에서, 빠르게 찾으세요.</h1>
+              <p class="hero-text">
+                중앙부처 복지서비스를 검색하고, 생애주기와 소관부처로 좁히고, 마음에 드는 복지는 찜해 둘 수 있습니다.
+                복지로처럼 쉽고 익숙한 흐름으로 바로 확인해 보세요.
+              </p>
+
+              <div class="search-board" aria-label="복지 검색">
+                <div class="search-row">
+                  <label class="field">
+                    <span class="visually-hidden">복지 검색어</span>
+                    <input id="keywordInput" class="search-input" type="search" placeholder="검색어를 입력하세요" autocomplete="off" />
+                  </label>
+                  <label class="field">
+                    <span class="visually-hidden">소관부처 선택</span>
+                    <select id="ministrySelect" class="search-select">
+                      <option value="전체">전체 부처</option>
+                    </select>
+                  </label>
+                  <button id="searchButton" class="search-button" type="button">검색</button>
+                </div>
+                <div class="notice-strip" id="news">
+                  <span class="notice-pill">공지</span>
+                  <div class="notice-track" aria-live="polite">
+                    <div class="notice-message is-active">복지길잡이는 중앙부처 복지서비스를 한 번에 찾을 수 있도록 정리한 안내 화면입니다.</div>
+                    <div class="notice-message">카드 우측 하트 아이콘으로 찜한 복지를 저장할 수 있습니다.</div>
+                    <div class="notice-message">카드를 누르면 지원 대상, 신청 방법, 지원 내용을 자세히 확인할 수 있습니다.</div>
+                  </div>
+                  <div class="notice-controls">
+                    <button class="notice-control" type="button" id="noticePrev" aria-label="이전 공지">‹</button>
+                    <button class="notice-control" type="button" id="noticeNext" aria-label="다음 공지">›</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <aside class="panel" aria-label="오늘의 안내">
+              <div class="panel-head" style="margin-bottom: 18px;">
+                <div>
+                  <h2 class="panel-title">오늘의 복지 안내</h2>
+                  <p class="panel-subtitle">복지로 메인처럼 자주 찾는 흐름을 모았습니다.</p>
+                </div>
+                <span class="section-badge" id="apiStatus">공공데이터 연결 준비 중</span>
+              </div>
+              <div class="result-meta" style="margin-bottom: 18px;">
+                <span class="section-badge">현재 표시 <strong id="service-count">0</strong></span>
+                <span class="section-badge">찜한 복지 <strong id="bookmark-count">0</strong></span>
+              </div>
+              <div style="display:grid; gap: 12px;">
+                <div class="result-card" style="padding: 16px 18px;">
+                  <div class="panel-title" style="font-size: 1rem;">복지서비스 바로 찾기</div>
+                  <div class="panel-subtitle">검색어와 부처를 조합해 서비스 목록을 좁혀보세요.</div>
+                </div>
+                <div class="result-card" style="padding: 16px 18px;">
+                  <div class="panel-title" style="font-size: 1rem;">찜한 복지 보기</div>
+                  <div class="panel-subtitle">마음에 드는 복지를 저장해 두고 나중에 다시 볼 수 있습니다.</div>
+                </div>
+                <div class="result-card" style="padding: 16px 18px;">
+                  <div class="panel-title" style="font-size: 1rem;">상세 안내</div>
+                  <div class="panel-subtitle">서비스 카드를 열면 지원 대상, 신청 방법, 지원 내용을 확인합니다.</div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="quick-menu" id="guide" aria-label="자주 찾는 메뉴">
+          <button class="quick-card" type="button" data-quick-action="services" data-nav-target="services">
+            <span class="quick-icon">복</span>
+            <span class="quick-title">복지서비스</span>
+          </button>
+          <button class="quick-card" type="button" data-quick-action="applications" data-nav-target="applications">
+            <span class="quick-icon">신</span>
+            <span class="quick-title">서비스신청</span>
+          </button>
+          <button class="quick-card" type="button" data-quick-action="guide" data-nav-target="guide">
+            <span class="quick-icon">도</span>
+            <span class="quick-title">복지도움</span>
+          </button>
+          <button class="quick-card" type="button" data-quick-action="news" data-nav-target="news">
+            <span class="quick-icon">소</span>
+            <span class="quick-title">복지소식</span>
+          </button>
+          <button class="quick-card" type="button" data-quick-action="saved" data-nav-target="services">
+            <span class="quick-icon">찜</span>
+            <span class="quick-title">찜한 복지</span>
+          </button>
+          <button class="quick-card" type="button" data-quick-action="reset" data-nav-target="services">
+            <span class="quick-icon">초</span>
+            <span class="quick-title">초기화</span>
+          </button>
+        </section>
+
+        <section class="panel" id="applications" aria-label="복지 서비스 목록">
+          <div class="panel-head">
+            <div>
+              <h2 class="panel-title">생애주기 필터</h2>
+              <p class="panel-subtitle">복지로처럼 간결한 필터 버튼으로 빠르게 분류해 보세요.</p>
+            </div>
+            <div class="service-toolbar">
+              <button class="ghost" id="savedToggle" type="button">찜한 복지 보기</button>
+              <button class="ghost is-active" id="allReset" type="button">전체 보기</button>
+            </div>
+          </div>
+
+          <div class="filter-row" id="lifeStageFilters" aria-label="생애주기 필터"></div>
+
+          <div class="service-toolbar" style="margin-top: 18px;">
+            <div class="result-meta">
+              <span class="section-badge">검색어 <strong id="keywordEcho">전체</strong></span>
+              <span class="section-badge">부처 <strong id="ministryEcho">전체</strong></span>
+              <span class="section-badge">생애주기 <strong id="lifeStageEcho">전체</strong></span>
+            </div>
+            <div class="section-badge">카드를 누르면 상세 정보가 열립니다.</div>
+          </div>
+
+          <div class="result-shell" id="services">
+            <div class="result-head">
+              <div>
+                <h2 class="panel-title">복지 서비스 목록</h2>
+                <p class="panel-subtitle">카드를 클릭하면 지원 대상, 신청 방법, 지원 내용을 확인할 수 있습니다.</p>
+              </div>
+            </div>
+            <div id="listArea"></div>
+          </div>
+        </section>
+
+        <footer class="site-footer">
+          <div>복지길잡이 · 중앙부처 복지서비스 안내</div>
+        </footer>
+      </main>
+
+      <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+        <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+          <header class="modal-header">
+            <div class="modal-title-wrap">
+              <h2 id="modalTitle"></h2>
+              <p id="modalSubtitle"></p>
+            </div>
+            <button class="modal-close" id="modalClose" type="button" aria-label="상세 창 닫기">×</button>
+          </header>
+          <div class="modal-body">
+            <article class="modal-block full">
+              <h3>지원 대상</h3>
+              <p id="modalTarget"></p>
+            </article>
+            <article class="modal-block">
+              <h3>신청 방법</h3>
+              <p id="modalMethod"></p>
+            </article>
+            <article class="modal-block">
+              <h3>지원 내용</h3>
+              <p id="modalDetails"></p>
+            </article>
+          </div>
+        </section>
+      </div>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_PROXY_BASE = window.location.protocol === 'file:' ? 'http://localhost:4173/api/welfare' : '/api/welfare';
+    const LIST_ENDPOINT = `${API_PROXY_BASE}/list`;
+    const DETAIL_ENDPOINT = `${API_PROXY_BASE}/detail`;
+    const STORAGE_KEY = 'welfare-guide-bookmarks';
+    const DEFAULT_LIFE_STAGES = ['전체', '영유아', '청년', '중장년', '노년'];
+    const NOTICE_MESSAGES = [
+      '복지길잡이는 중앙부처 복지서비스를 한 번에 찾을 수 있도록 정리한 안내 화면입니다.',
+      '카드 우측 하트 아이콘으로 찜한 복지를 저장할 수 있습니다.',
+      '카드를 누르면 지원 대상, 신청 방법, 지원 내용을 자세히 확인할 수 있습니다.'
+    ];
+
+    const FALLBACK_SERVICES = [
+      { id: 'first-meeting-voucher', title: '첫만남이용권', ministry: '보건복지부', lifeStages: ['영유아'], targetAudience: '출생 아동을 양육하는 가정', applicationMethod: '읍·면·동 행정복지센터 또는 복지로에서 신청할 수 있습니다.', serviceDetails: '출생 직후 아동 양육에 필요한 초기 비용을 바우처 형태로 지원합니다.', summary: '출생 가정의 초기 양육 부담을 덜어주는 대표적인 영유아 지원 서비스입니다.' },
+      { id: 'child-allowance', title: '아동수당', ministry: '보건복지부', lifeStages: ['영유아'], targetAudience: '만 8세 미만 아동을 양육하는 가정', applicationMethod: '온라인 복지로 또는 주민센터 방문으로 신청할 수 있습니다.', serviceDetails: '아동 양육에 필요한 기본적인 생활비를 매월 정기적으로 지원합니다.', summary: '아이를 키우는 가정의 일상적인 양육비를 지원하는 제도입니다.' },
+      { id: 'youth-savings', title: '청년내일저축계좌', ministry: '보건복지부', lifeStages: ['청년'], targetAudience: '근로 중인 청년 중 소득 요건을 충족하는 가구', applicationMethod: '신청 기간에 맞춰 복지로와 읍·면·동 행정복지센터에서 신청합니다.', serviceDetails: '청년이 꾸준히 저축하면 정부가 추가 적립을 지원해 자산 형성을 돕습니다.', summary: '자산 형성이 필요한 청년을 위한 대표적인 매칭형 저축 지원 서비스입니다.' },
+      { id: 'employment-support', title: '국민취업지원제도', ministry: '고용노동부', lifeStages: ['청년', '중장년'], targetAudience: '구직을 희망하는 청년, 중장년, 취약계층 구직자', applicationMethod: '고용24 또는 고용센터 방문으로 신청할 수 있습니다.', serviceDetails: '상담, 취업활동계획, 구직촉진수당, 취업지원서비스를 종합적으로 제공합니다.', summary: '취업 준비와 재도약을 함께 지원하는 맞춤형 고용 서비스입니다.' },
+      { id: 'emergency-welfare', title: '긴급복지지원', ministry: '보건복지부', lifeStages: ['중장년', '노년'], targetAudience: '갑작스러운 위기 상황으로 생계 유지가 어려운 가구', applicationMethod: '보건복지상담센터 또는 주민센터를 통해 긴급 신청할 수 있습니다.', serviceDetails: '생계비, 의료비, 주거비 등 위기 상황에 필요한 지원을 신속하게 제공합니다.', summary: '갑작스러운 위기 상황에 빠른 속도로 대응하는 긴급 지원 제도입니다.' },
+      { id: 'basic-pension', title: '기초연금', ministry: '보건복지부', lifeStages: ['노년'], targetAudience: '소득·재산 기준을 충족하는 어르신', applicationMethod: '복지로 또는 가까운 주민센터, 국민연금공단 지사에서 신청합니다.', serviceDetails: '노후 소득을 보완해 안정적인 생활을 돕는 연금성 지원입니다.', summary: '어르신의 안정적인 노후 생활을 지원하는 대표적인 복지 서비스입니다.' },
+      { id: 'senior-job', title: '노인일자리 및 사회활동 지원', ministry: '보건복지부', lifeStages: ['노년'], targetAudience: '활동을 희망하는 어르신', applicationMethod: '시니어클럽, 노인복지관, 주민센터 등을 통해 참여 신청이 가능합니다.', serviceDetails: '근로 및 사회활동 참여를 통해 소득과 사회적 관계를 함께 지원합니다.', summary: '일과 사회활동을 원하는 어르신에게 맞춤형 참여 기회를 제공합니다.' },
+      { id: 'housing-benefit', title: '주거급여', ministry: '국토교통부', lifeStages: ['영유아', '청년', '중장년', '노년'], targetAudience: '소득·재산 기준을 충족하는 저소득 가구', applicationMethod: '주민센터 또는 복지로 온라인 신청으로 접수합니다.', serviceDetails: '임차료 지원과 주택 수선 지원을 통해 주거 안정을 돕습니다.', summary: '가구의 주거 안정성을 높여주는 핵심 생활 밀착형 지원입니다.' },
+      { id: 'energy-voucher', title: '에너지바우처', ministry: '산업통상자원부', lifeStages: ['영유아', '노년'], targetAudience: '에너지 취약계층으로 분류되는 가구', applicationMethod: '읍·면·동 행정복지센터에서 신청 후 사용처에서 이용합니다.', serviceDetails: '냉난방 비용 부담을 줄이기 위해 전기, 도시가스, 등유 등을 지원합니다.', summary: '냉난방비 부담을 덜어주는 계절성 복지 지원입니다.' }
+    ];
+
+    const state = {
+      services: [],
+      bookmarks: new Map(),
+      query: '',
+      ministry: '전체',
+      lifeStage: '전체',
+      savedOnly: false,
+      loading: true,
+      apiStatus: '공공데이터 연결 준비 중',
+      detailRequestToken: 0,
+      noticeIndex: 0,
+      noticeTimer: null
+    };
+
+    const els = {
+      listArea: document.getElementById('listArea'),
+      keywordInput: document.getElementById('keywordInput'),
+      ministrySelect: document.getElementById('ministrySelect'),
+      searchButton: document.getElementById('searchButton'),
+      lifeStageFilters: document.getElementById('lifeStageFilters'),
+      savedToggle: document.getElementById('savedToggle'),
+      allReset: document.getElementById('allReset'),
+      serviceCount: document.getElementById('service-count'),
+      bookmarkCount: document.getElementById('bookmark-count'),
+      apiStatus: document.getElementById('apiStatus'),
+      keywordEcho: document.getElementById('keywordEcho'),
+      ministryEcho: document.getElementById('ministryEcho'),
+      lifeStageEcho: document.getElementById('lifeStageEcho'),
+      modalBackdrop: document.getElementById('modalBackdrop'),
+      modalTitle: document.getElementById('modalTitle'),
+      modalSubtitle: document.getElementById('modalSubtitle'),
+      modalTarget: document.getElementById('modalTarget'),
+      modalMethod: document.getElementById('modalMethod'),
+      modalDetails: document.getElementById('modalDetails'),
+      modalClose: document.getElementById('modalClose'),
+      toast: document.getElementById('toast'),
+      noticeMessages: Array.from(document.querySelectorAll('.notice-message')),
+      noticePrev: document.getElementById('noticePrev'),
+      noticeNext: document.getElementById('noticeNext'),
+      navButtons: Array.from(document.querySelectorAll('[data-nav]')),
+      quickButtons: Array.from(document.querySelectorAll('[data-quick-action]'))
+    };
+
+    function loadBookmarks() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        state.bookmarks = new Map(saved.map((item) => [item.id, item]));
+      } catch {
+        state.bookmarks = new Map();
+      }
+    }
+
+    function persistBookmarks() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(state.bookmarks.values())));
+      renderSummary();
+    }
+
+    function showToast(message) {
+      els.toast.innerHTML = message;
+      els.toast.classList.add('is-show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => {
+        els.toast.classList.remove('is-show');
+      }, 2200);
+    }
+
+    function normalizeText(value, fallback = '') {
+      if (value === null || value === undefined) return fallback;
+      const text = String(value).replace(/\s+/g, ' ').trim();
+      return text || fallback;
+    }
+
+    function firstText(record, keys, fallback = '') {
+      for (const key of keys) {
+        if (record && Object.prototype.hasOwnProperty.call(record, key)) {
+          const text = normalizeText(record[key]);
+          if (text) return text;
+        }
+      }
+      return fallback;
+    }
+
+    function getFieldRecord(record) {
+      if (!record || typeof record !== 'object') return {};
+      return record;
+    }
+
+    function inferLifeStages(text) {
+      const value = normalizeText(text);
+      const results = [];
+      const pushIf = (label, pattern) => {
+        if (pattern.test(value) && !results.includes(label)) results.push(label);
+      };
+      pushIf('영유아', /영유아|영아|유아|아동|출생|신생아|산모|임신|보육|어린이|아이/);
+      pushIf('청년', /청년|청소년|대학생|구직|창업|취업준비|청년도약|청년내일/);
+      pushIf('중장년', /중장년|중년|장년|재취업|실직|가구|근로|자립|생계/);
+      pushIf('노년', /노년|노인|어르신|고령|기초연금|장기요양|시니어/);
+      return results.length ? results : ['전체'];
+    }
+
+    function normalizeService(record, index, forcedId) {
+      const item = getFieldRecord(record);
+      const title = firstText(item, ['servNm', '서비스명', 'serviceNm', 'svcNm', 'SVC_NM', 'BSNS_NM', 'businessNm', 'title', 'name', '복지서비스명', '사업명'], `복지 서비스 ${index + 1}`);
+      const ministry = firstText(item, ['jurMnofNm', '소관부처', 'ministry', 'ministryNm', 'MNG_INST_NM', 'MNG_NM', 'insttNm', '기관명', '부처명'], '미지정 부처');
+      const targetAudience = firstText(item, ['tgtrDtlCn', '지원대상', 'targetAudience', 'target', 'TRGT_CN', 'SUPT_TRGT_CN', 'beneficiary', '대상', '수혜대상'], '상세 조회에서 지원 대상을 확인해 주세요.');
+      const applicationMethod = firstText(item, ['신청방법', 'applicationMethod', 'applyMethod', 'RCPT_MTHD_CN', 'RCPT_MTHD_DC', '신청안내', '접수방법'], '상세 조회에서 신청 방법을 확인해 주세요.');
+      const serviceDetails = firstText(item, ['alwServCn', 'wlfareInfoOutlCn', '지원내용', 'serviceDetails', 'detail', 'SVC_CN', 'SUPT_CN', 'supportContent', '내용', '세부내용'], '상세 조회에서 지원 내용을 확인해 주세요.');
+      const summary = firstText(item, ['servDgst', '요약', 'summary', 'shortSummary', 'SVC_SUMM', 'desc', '설명', '소개'], serviceDetails.slice(0, 92) || `${title} 서비스입니다.`);
+      const lifeStages = inferLifeStages([firstText(item, ['lifeArray'], ''), title, targetAudience, serviceDetails, summary].join(' '));
+      const id = (forcedId || firstText(item, ['servId', '서비스ID', 'serviceId', 'id', 'seq', 'rowNo', 'SEQ'], `${title}-${ministry}-${index}`))
+        .replace(/\s+/g, '-')
+        .replace(/[^\w가-힣-]/g, '')
+        .toLowerCase();
+
+      return { id, title, ministry, lifeStages, targetAudience, applicationMethod, serviceDetails, summary, raw: item };
+    }
+
+    function extractItems(payload) {
+      if (!payload) return [];
+      if (Array.isArray(payload)) return payload;
+      if (payload.response?.body?.items?.item) {
+        return Array.isArray(payload.response.body.items.item) ? payload.response.body.items.item : [payload.response.body.items.item];
+      }
+      if (payload.response?.body?.items) {
+        return Array.isArray(payload.response.body.items) ? payload.response.body.items : [payload.response.body.items];
+      }
+      if (payload.items) return Array.isArray(payload.items) ? payload.items : [payload.items];
+      if (payload.list) return Array.isArray(payload.list) ? payload.list : [payload.list];
+      if (payload.data) return Array.isArray(payload.data) ? payload.data : [payload.data];
+      return [];
+    }
+
+    function extractItemsFromXml(xmlDocument) {
+      if (!xmlDocument || !xmlDocument.querySelectorAll) return [];
+      const nodes = Array.from(xmlDocument.querySelectorAll('servList, item'));
+      return nodes.map((node) => {
+        const result = {};
+        Array.from(node.children).forEach((child) => {
+          result[child.tagName] = child.textContent;
+        });
+        return result;
+      });
+    }
+
+    function extractNodeValue(node) {
+      const result = {};
+      Array.from(node.children).forEach((child) => {
+        const nestedValue = child.children.length ? extractNodeValue(child) : child.textContent;
+        const current = result[child.tagName];
+        if (current === undefined) {
+          result[child.tagName] = nestedValue;
+        } else if (Array.isArray(current)) {
+          current.push(nestedValue);
+        } else {
+          result[child.tagName] = [current, nestedValue];
+        }
+      });
+      return result;
+    }
+
+    function extractDetailFromXml(xmlDocument) {
+      if (!xmlDocument || !xmlDocument.querySelector) return null;
+      const detailNode = xmlDocument.querySelector('wantedDtl');
+      return detailNode ? extractNodeValue(detailNode) : null;
+    }
+
+    function combineText(value) {
+      if (Array.isArray(value)) {
+        return value.map((entry) => combineText(entry)).filter(Boolean).join('\n\n');
+      }
+      if (value && typeof value === 'object') {
+        return Object.values(value).map((entry) => combineText(entry)).filter(Boolean).join('\n\n');
+      }
+      return normalizeText(value);
+    }
+
+    function buildDetailText(detail, key, fallback = '') {
+      return combineText(detail?.[key]) || fallback;
+    }
+
+    function buildApplicationMethod(detail) {
+      const applicationBlock = detail?.applmetList;
+      const items = Array.isArray(applicationBlock) ? applicationBlock : applicationBlock ? [applicationBlock] : [];
+      const texts = items
+        .map((entry) => combineText(entry?.servSeDetailNm || entry?.servSeDetailLink || entry))
+        .filter(Boolean);
+      return texts.join('\n\n') || '상세 조회에서 신청 방법을 확인해 주세요.';
+    }
+
+    function getAllServicesSource() {
+      const raw = state.services.length ? state.services : FALLBACK_SERVICES;
+      return raw.map((service, index) => normalizeService(service.raw || service, index));
+    }
+    function getVisibleServices() {
+      const source = state.savedOnly ? Array.from(state.bookmarks.values()) : state.services;
+      const normalized = source.length ? source : FALLBACK_SERVICES;
+      const query = normalizeText(state.query).toLowerCase();
+
+      return normalized.filter((service) => {
+        const text = [service.title, service.ministry, service.summary, service.targetAudience, service.serviceDetails, service.applicationMethod, ...(service.lifeStages || [])].join(' ').toLowerCase();
+        const matchesKeyword = !query || text.includes(query);
+        const matchesMinistry = state.ministry === '전체' || service.ministry === state.ministry;
+        const matchesLifeStage = state.lifeStage === '전체' || (service.lifeStages || []).includes(state.lifeStage);
+        return matchesKeyword && matchesMinistry && matchesLifeStage;
+      });
+    }
+
+    function renderMinistryOptions() {
+      const services = getAllServicesSource();
+      const ministries = ['전체', ...new Set(services.map((service) => service.ministry).filter(Boolean))];
+      els.ministrySelect.innerHTML = ministries.map((ministry) => `<option value="${escapeHtml(ministry)}">${escapeHtml(ministry)} 부처</option>`).join('');
+      els.ministrySelect.value = state.ministry;
+    }
+
+    function renderLifeStageFilters() {
+      els.lifeStageFilters.innerHTML = DEFAULT_LIFE_STAGES.map((value) => {
+        const active = state.lifeStage === value ? ' is-active' : '';
+        return `<button type="button" class="chip filter-chip${active}" data-life-stage="${escapeHtml(value)}">${escapeHtml(value)}</button>`;
+      }).join('');
+    }
+
+    function setNotice(index) {
+      const total = els.noticeMessages.length;
+      if (!total) return;
+      state.noticeIndex = (index + total) % total;
+      els.noticeMessages.forEach((message, messageIndex) => {
+        message.classList.toggle('is-active', messageIndex === state.noticeIndex);
+      });
+    }
+
+    function stepNotice(delta) {
+      setNotice(state.noticeIndex + delta);
+    }
+
+    function scrollToSection(id) {
+      const target = document.getElementById(id);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function renderSummary() {
+      els.serviceCount.textContent = String(getVisibleServices().length);
+      els.bookmarkCount.textContent = String(state.bookmarks.size);
+      els.keywordEcho.textContent = state.query ? state.query : '전체';
+      els.ministryEcho.textContent = state.ministry;
+      els.lifeStageEcho.textContent = state.lifeStage;
+      els.savedToggle.classList.toggle('is-active', state.savedOnly);
+      els.savedToggle.textContent = state.savedOnly ? '찜한 복지만 보기' : '찜한 복지 보기';
+      els.allReset.classList.toggle('is-active', !state.savedOnly && state.ministry === '전체' && state.lifeStage === '전체' && !state.query);
+      els.apiStatus.textContent = state.apiStatus;
+      els.apiStatus.classList.toggle('error', state.apiStatus.includes('실패'));
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function createCard(service) {
+      const saved = state.bookmarks.has(service.id);
+      const lifeTags = service.lifeStages && service.lifeStages.length ? service.lifeStages : ['전체'];
+      return `
+        <article class="card" tabindex="0" role="button" aria-label="${escapeHtml(service.title)} 상세 보기" data-service-id="${escapeHtml(service.id)}">
+          <div>
+            <div class="card-head">
+              <div>
+                <h3 class="card-title">${escapeHtml(service.title)}</h3>
+                <div class="card-ministry">${escapeHtml(service.ministry)}</div>
+              </div>
+              <button class="bookmark-btn ${saved ? 'is-saved' : ''}" type="button" data-bookmark-id="${escapeHtml(service.id)}" aria-label="${saved ? '찜 해제' : '찜하기'}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.53L12 21.35z" /></svg>
+              </button>
+            </div>
+            <p class="card-summary">${escapeHtml(service.summary)}</p>
+            <div class="tag-row">${lifeTags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}</div>
+          </div>
+          <div class="card-footer">
+            <span class="card-link">자세히 보기</span>
+            <span class="badge">지원 대상 확인</span>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderList() {
+      const services = getVisibleServices();
+      renderSummary();
+
+      if (state.loading) {
+        els.listArea.innerHTML = `
+          <div class="spinner-wrap">
+            <div class="spinner" aria-hidden="true"></div>
+            <div class="spinner-label">공공데이터를 불러오는 중입니다.</div>
+          </div>
+        `;
+        return;
+      }
+
+      if (!services.length) {
+        els.listArea.innerHTML = `
+          <div class="state">
+            <div class="state-card">
+              <h3 class="state-title">조건에 맞는 복지가 없습니다.</h3>
+              <p class="state-text">검색어, 소관부처, 생애주기 또는 찜 필터를 조금 바꿔서 다시 찾아보세요.</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      els.listArea.innerHTML = `<div class="grid">${services.map((service) => createCard(service)).join('')}</div>`;
+    }
+
+    function setQueryAndRender() {
+      state.query = els.keywordInput.value.trim();
+      fetchServices();
+    }
+
+    function toggleBookmark(serviceId) {
+      const source = state.services.length ? state.services : FALLBACK_SERVICES;
+      const service = source.find((entry) => entry.id === serviceId) || FALLBACK_SERVICES.find((entry) => entry.id === serviceId);
+      if (!service) return;
+
+      if (state.bookmarks.has(serviceId)) {
+        state.bookmarks.delete(serviceId);
+        showToast('<strong>찜 해제</strong>했습니다.');
+      } else {
+        const normalized = normalizeService(service.raw || service, 0, serviceId);
+        state.bookmarks.set(serviceId, normalized);
+        showToast('<strong>찜 목록</strong>에 추가했습니다.');
+      }
+
+      persistBookmarks();
+      renderLifeStageFilters();
+      renderMinistryOptions();
+      renderList();
+    }
+
+    async function openModal(serviceId) {
+      const services = state.savedOnly ? Array.from(state.bookmarks.values()) : (state.services.length ? state.services : FALLBACK_SERVICES);
+      const service = services.find((entry) => entry.id === serviceId) || FALLBACK_SERVICES.find((entry) => entry.id === serviceId);
+      if (!service) return;
+
+      els.modalBackdrop.classList.add('is-open');
+      els.modalBackdrop.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      els.modalTitle.textContent = '상세 정보를 불러오는 중입니다.';
+      els.modalSubtitle.textContent = '잠시만 기다려 주세요.';
+      els.modalTarget.textContent = '불러오는 중입니다.';
+      els.modalMethod.textContent = '불러오는 중입니다.';
+      els.modalDetails.textContent = '불러오는 중입니다.';
+
+      const requestToken = ++state.detailRequestToken;
+
+      try {
+        const params = new URLSearchParams({ servId: service.id });
+        const response = await fetch(`${DETAIL_ENDPOINT}?${params.toString()}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const xmlText = await response.text();
+        const xml = new DOMParser().parseFromString(xmlText, 'application/xml');
+        const detail = extractDetailFromXml(xml);
+        if (!detail || requestToken !== state.detailRequestToken) return;
+
+        const ministry = combineText(detail.jurMnofNm) || service.ministry;
+        const lifeStages = combineText(detail.lifeArray) || service.lifeStages.join(' · ');
+        els.modalTitle.textContent = combineText(detail.servNm) || service.title;
+        els.modalSubtitle.textContent = `${ministry} · ${lifeStages}`;
+        els.modalTarget.textContent = buildDetailText(detail, 'tgtrDtlCn', service.targetAudience);
+        els.modalMethod.textContent = buildApplicationMethod(detail);
+        els.modalDetails.textContent = buildDetailText(detail, 'alwServCn', buildDetailText(detail, 'wlfareInfoOutlCn', service.serviceDetails));
+      } catch {
+        if (requestToken !== state.detailRequestToken) return;
+        els.modalTitle.textContent = service.title;
+        els.modalSubtitle.textContent = `${service.ministry} · ${service.lifeStages.join(' · ')}`;
+        els.modalTarget.textContent = service.targetAudience;
+        els.modalMethod.textContent = service.applicationMethod;
+        els.modalDetails.textContent = service.serviceDetails;
+      }
+    }
+
+    function closeModal() {
+      els.modalBackdrop.classList.remove('is-open');
+      els.modalBackdrop.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    async function fetchServices() {
+      state.loading = true;
+      state.apiStatus = '공공데이터를 불러오는 중입니다';
+      renderList();
+
+      try {
+        const params = new URLSearchParams({
+          pageNo: '1',
+          numOfRows: '500',
+          srchKeyCode: '003',
+          orderBy: 'date'
+        });
+
+        if (state.query) {
+          params.set('searchWrd', state.query);
+        }
+
+        if (state.lifeStage !== '전체') {
+          params.set('lifeArray', state.lifeStage);
+        }
+
+        const response = await fetch(`${LIST_ENDPOINT}?${params.toString()}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const text = await response.text();
+        const xml = new DOMParser().parseFromString(text, 'application/xml');
+        const items = extractItemsFromXml(xml);
+
+        const normalized = items.map((item, index) => normalizeService(item, index)).filter(Boolean);
+        state.services = normalized.length ? normalized : FALLBACK_SERVICES.map((item, index) => normalizeService(item, index));
+        state.apiStatus = normalized.length ? '실제 공공데이터 연결 완료' : '샘플 데이터로 표시 중';
+      } catch (error) {
+        state.services = FALLBACK_SERVICES.map((item, index) => normalizeService(item, index));
+        state.apiStatus = '실제 공공데이터 연결 실패, 샘플 데이터로 표시 중';
+      } finally {
+        state.loading = false;
+        renderLifeStageFilters();
+        renderMinistryOptions();
+        renderList();
+      }
+    }
+
+    function resetFilters() {
+      state.query = '';
+      state.ministry = '전체';
+      state.lifeStage = '전체';
+      state.savedOnly = false;
+      els.keywordInput.value = '';
+      els.ministrySelect.value = '전체';
+      fetchServices();
+    }
+
+    function bindEvents() {
+      els.noticePrev.addEventListener('click', () => stepNotice(-1));
+      els.noticeNext.addEventListener('click', () => stepNotice(1));
+
+      els.navButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const target = button.dataset.nav;
+          if (target === 'services') {
+            scrollToSection('services');
+          } else if (target === 'applications') {
+            scrollToSection('applications');
+          } else if (target === 'guide') {
+            scrollToSection('guide');
+          } else if (target === 'news') {
+            scrollToSection('news');
+          }
+        });
+      });
+
+      els.quickButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const action = button.dataset.quickAction;
+          if (action === 'saved') {
+            state.savedOnly = true;
+            renderList();
+            scrollToSection('services');
+            return;
+          }
+
+          if (action === 'reset') {
+            resetFilters();
+            scrollToSection('services');
+            return;
+          }
+
+          if (action === 'services') {
+            scrollToSection('services');
+          } else if (action === 'applications') {
+            scrollToSection('applications');
+          } else if (action === 'guide') {
+            scrollToSection('guide');
+          } else if (action === 'news') {
+            scrollToSection('news');
+          }
+        });
+      });
+
+      els.searchButton.addEventListener('click', setQueryAndRender);
+      els.keywordInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          setQueryAndRender();
+        }
+      });
+      els.keywordInput.addEventListener('input', () => {
+        state.query = els.keywordInput.value.trim();
+      });
+      els.ministrySelect.addEventListener('change', () => {
+        state.ministry = els.ministrySelect.value;
+        renderList();
+      });
+      els.lifeStageFilters.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-life-stage]');
+        if (!button) return;
+        state.lifeStage = button.dataset.lifeStage || '전체';
+        renderLifeStageFilters();
+        fetchServices();
+      });
+      els.savedToggle.addEventListener('click', () => {
+        state.savedOnly = !state.savedOnly;
+        renderList();
+      });
+      els.allReset.addEventListener('click', () => {
+        resetFilters();
+      });
+      els.listArea.addEventListener('click', (event) => {
+        const bookmarkButton = event.target.closest('[data-bookmark-id]');
+        if (bookmarkButton) {
+          event.stopPropagation();
+          toggleBookmark(bookmarkButton.dataset.bookmarkId);
+          return;
+        }
+        const card = event.target.closest('[data-service-id]');
+        if (card) openModal(card.dataset.serviceId);
+      });
+      els.listArea.addEventListener('keydown', (event) => {
+        if ((event.key === 'Enter' || event.key === ' ') && event.target.closest('[data-service-id]')) {
+          event.preventDefault();
+          const card = event.target.closest('[data-service-id]');
+          if (card) openModal(card.dataset.serviceId);
+        }
+      });
+      els.modalClose.addEventListener('click', closeModal);
+      els.modalBackdrop.addEventListener('click', (event) => {
+        if (event.target === els.modalBackdrop) closeModal();
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && els.modalBackdrop.classList.contains('is-open')) {
+          closeModal();
+        }
+      });
+    }
+
+    function initialize() {
+      loadBookmarks();
+      bindEvents();
+      setNotice(0);
+      state.noticeTimer = window.setInterval(() => {
+        stepNotice(1);
+      }, 5000);
+      renderLifeStageFilters();
+      renderMinistryOptions();
+      renderList();
+      fetchServices();
+    }
+
+    initialize();
+  </script>
+</body>
+</html>
+
